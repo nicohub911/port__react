@@ -1,42 +1,51 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.conteiner{
+    display: flex;
+    width: 100%;
   }
-  to {
-    transform: rotate(360deg);
+  .navegator{
+    height: calc(100vh - 40px);
+    min-height: 245px;
+    width: 80px;
+    background-color: #fd2b2b;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .navegator ul{
+    position: relative;
+    height: 100%;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+  .navegator ul li{
+    width: 100%;
+    border: #d42a2a 1px solid;
+  }
+  .bottomSide_li{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+  }
+  .navegator ul li:hover{
+    background-color: #cf2626;
+  }
+  .navegator ul li * /*Link*/{
+    text-decoration: none;
+    font-family: sans-serif;
+    font-weight: 900;
+    color: #fff;
+    padding: 5px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+  }
+  .navegator ul li svg{
+    width: 100%;
+    padding: 5px;
+  }
+  .APP{
+    width: 100%;
+    height: calc(100vh - 40px);
+    border: 5px solid blue;
+  }
