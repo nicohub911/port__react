@@ -1,8 +1,10 @@
 import { Route, Link} from 'wouter'
-import { useEffect, useState } from 'react'
-import './App.css'
+import './css/App.css'
 import WelCome from './components/home.jsx'
 import Story from './components/story.jsx'
+import Game from './components/game.jsx'
+import GameMenu from './components/gamemenu.jsx';
+
 
 export default function App() {
 
@@ -11,6 +13,8 @@ export default function App() {
     <div className='conteiner'>
       <Route path='/' component={WelCome}/>
       <Route path='/story' component={Story}/>
+      <Route path='/game_menu' component={GameMenu}/>
+      <Route path='/game' component={Game}/>
     </div>
   )
 }

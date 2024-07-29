@@ -1,5 +1,4 @@
 import { IoPlayCircleOutline } from "react-icons/io5";
-
 import '../css/home.css'
 import { Link } from "wouter";
 
