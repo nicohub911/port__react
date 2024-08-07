@@ -1,11 +1,14 @@
 import '../css/game.css'
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import shipImage from '../img/ship.webp';
 import alienImage from '../img/alien.webp'
+import { Link} from 'wouter'
 
 export default function Game() {
+    let menuGameOver = useRef();
+    const updateCanvasRef = useRef(null);
     // canvas
-    let frame = 32;
+    const frame = 32;
     let row = 16;
     let column = 16;
     let playgroundWidth = frame * column;
@@ -17,7 +20,7 @@ export default function Game() {
     let initialShipX = frame * column / 2 - frame;
     let initialShipY = frame * row - frame * 2;
     const shipRef = useRef({ x: initialShipX, y: initialShipY, width: shipWidth, height: shipHeght });
-    let shipSpeedX = frame;
+    const shipSpeedX = frame;
     // aliens
     let alienArray = [];
     let alienWidth = frame * 2;
@@ -32,6 +35,13 @@ export default function Game() {
     // guns 
     let bulletArray = [];
     let bulletSpeedY = -10;
+    // score
+    const [scoreCount, setScore] = useState(0);
+    let gameOver = false;
+    // restar the game
+    function restart() {
+        window.location.reload();
+    }
     // create alins
     function createAliens() {
         let occupiedPositions = [];
@@ -55,8 +65,12 @@ export default function Game() {
         aliensCount = alienArray.length;
     }
     // move the ship
-    document.addEventListener("keydown", moveShip);
     function moveShip(e) {
+        // you cant move the ship if the game is over.
+        if (gameOver) {
+            return;
+        }
+
         if (e.code === "ArrowLeft" && shipRef.current.x >= frame) {
             shipRef.current.x -= shipSpeedX;
         } else if (e.code === "ArrowRight" && shipRef.current.x <= (playgroundWidth - (shipRef.current.width + frame))) {
@@ -64,12 +78,17 @@ export default function Game() {
         }
     }
     // shoot bullets
-    document.addEventListener("keyup", shoot)
     function shoot(e) {
-        if (e.code == "Space") {
+        let shipXposition = shipRef.current.x;
+        let shipYposition = shipRef.current.y;
+        // you cant shoot if the game is over
+        if (gameOver) {
+            return;
+        }
+        if (e.code == "KeyF") {
             let bullet = {
-                x: shipRef.current.x + shipWidth * 15 / 32,
-                y: shipRef.current.y,
+                x: shipXposition + shipWidth * 15 / 32,
+                y: shipYposition,
                 width: frame / 8,
                 height: frame / 2,
                 used: false
@@ -87,6 +106,12 @@ export default function Game() {
     }
 
     useEffect(() => {
+        updateCanvasRef.current = updateCanvas;
+        const handleKeyDown = (e) => moveShip(e);
+        const handleKeyUp = (e) => shoot(e);
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("keyup", handleKeyUp);
+
         let canvasContext = playground.current.getContext('2d');
         let shipIMG = new Image();
         shipIMG.src = shipImage;
@@ -94,11 +119,16 @@ export default function Game() {
             requestAnimationFrame(updateCanvas);
         };
         function updateCanvas() {
+            // cant update the canvas if the game is over
+            if (gameOver) {
+                return;
+            }
+
             requestAnimationFrame(updateCanvas);
             canvasContext.clearRect(0, 0, playgroundWidth, playgroundHeght); // clear canvas
             //ship
             canvasContext.drawImage(shipIMG, shipRef.current.x, shipRef.current.y, shipRef.current.width, shipRef.current.height);
-            //aliens
+            //aliens movement
             for (let i = 0; i < alienArray.length; i++) {
                 let alien = alienArray[i];
                 if (alien.alive) {
@@ -113,9 +143,14 @@ export default function Game() {
                         }
                     }
                     canvasContext.drawImage(alienIMG, alien.x, alien.y, alien.width, alien.height)
+
+                    if (alien.y >= shipRef.current.y) {
+                        menuGameOver.current.style.opacity = "1";
+                        gameOver = true;
+                    }
                 }
             }
-            // bullets
+            // add bullets when you are shooting
             for (let h = 0; h < bulletArray.length; h++) {
                 let bullet = bulletArray[h];
                 bullet.y += bulletSpeedY;
@@ -128,10 +163,11 @@ export default function Game() {
                         bullet.used = true;
                         alien.alive = false;
                         aliensCount--;
+                        setScore(prevScore => prevScore + 100);
                     }
                 }
             }
-            // clear bullets 
+            // clear bullets (array) 
             while (bulletArray.length > 0 && (bulletArray[0].used || bulletArray[0].y < 0)) {
                 bulletArray.shift(); // remove te firs bullet
             }
@@ -146,21 +182,36 @@ export default function Game() {
                 alienArray = [];
                 bulletArray = [];
                 createAliens();
-            }
+            } 
         }
         alienIMG = new Image();
         alienIMG.src = alienImage
         createAliens();
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("keyup", handleKeyUp);
+        };
     }, []);
+    
 
     return (
         <div className="game__container">
             <div className='game__container__score' style={{ width: `${playgroundWidth}px` }}>
-                1900
+                score: {scoreCount}
             </div>
             <canvas ref={playground} height={playgroundHeght} width={playgroundWidth} className='game__container__playGround'>
 
             </canvas>
+            <div ref={menuGameOver} className='game__container__gameOver'>
+                <p className='game__container__gameOver__title'>Continue?...</p>
+                <div>
+                <button className='game__container__gameOver__btn' onClick={()=>{restart()}}><p className='game__container__gameOver__btn__text'>Yes</p></button>
+                <button className='game__container__gameOver__btn'>
+                    <Link className='game__container__gameOver__btn__text' to="/">No</Link>
+                </button>
+                </div>
+            </div>
         </div>
     )
 }
