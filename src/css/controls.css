@@ -7,6 +7,7 @@
     flex-wrap: wrap;
     background-color: #181818;
     position: relative;
+    z-index: 10;
 }
 .controls__container__shoot{
     display: flex;
