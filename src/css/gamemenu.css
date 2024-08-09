@@ -1,5 +1,3 @@
-
-
 .gameMenu__container{
     background-color: #1a1a1a;
     width: 100%;
@@ -10,6 +8,7 @@
     justify-content: center;
     align-items: center;
     animation: windowAnimation 1s linear 1;
+    z-index: 10;
 }
 @keyframes windowAnimation {
     0%{
